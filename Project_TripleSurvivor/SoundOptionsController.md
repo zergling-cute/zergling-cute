@@ -1,7 +1,7 @@
 # 🛠 트리플서바이버: 환경설정 및 사운드 제어 UI (Sound Options)
 
 ## 1. 시스템 개요 (Overview)
-게임 내 배경음(BGM)과 효과음(SFX)을 켜고 끌 수 있는 환경설정 UI 컨트롤러입니다. 
+게임 내 배경음(BGM)과 효과음(SFX)을 켜고 탈 수 있는 환경설정 UI 컨트롤러입니다. 
 플레이어가 설정한 옵션 값이 게임을 껐다 켜도 유지되도록 **데이터 영속성(Data Persistence)**을 보장하며, 싱글톤(Singleton) 패턴으로 구현된 사운드 매니저들과 통신하여 볼륨을 중앙 제어합니다.
 
 * **담당 역할:** 설정 UI 로직 구현, 로컬 데이터 저장 연동, UI 시각적 피드백(Flip) 적용
@@ -22,15 +22,18 @@
 
 ```mermaid
 flowchart TD
-    A[설정창 오픈 / Start] --> B[PlayerPrefs에서 BGM/SFX 저장값 로드]
-    B --> C{값이 1 (ON)인가?}
-    C -- Yes --> D[볼륨 0.5f ~ 1.0f 세팅<br>UI 이미지 Y축 180도 회전]
-    C -- No (OFF) --> E[볼륨 0f 음소거 세팅<br>UI 이미지 Y축 0도 유지]
+    A[설정창 오픈 / Start] --> B[PlayerPrefs 저장값 로드]
+    B --> C{값이 1 ON 인가?}
     
-    F([플레이어가 토글 클릭]) --> G{현재 토글이 On 상태인가?}
-    G -- Yes --> H[사운드 매니저 볼륨 켜기<br>PlayerPrefs에 1 저장]
-    G -- No --> I[사운드 매니저 볼륨 0으로 음소거<br>PlayerPrefs에 0 저장]
-    H --> J[UI 이미지 180도 Flip 연출]
+    C -- Yes --> D[볼륨 세팅<br>UI 이미지 180도 회전]
+    C -- No --> E[볼륨 0 음소거<br>UI 이미지 원위치]
+    
+    F([토글 클릭 이벤트]) --> G{현재 On 상태인가?}
+    
+    G -- Yes --> H[사운드 켜기<br>PlayerPrefs에 1 저장]
+    G -- No --> I[사운드 끄기<br>PlayerPrefs에 0 저장]
+    
+    H --> J[UI 이미지 Flip 연출]
     I --> K[UI 이미지 원위치 연출]
 ```
 
