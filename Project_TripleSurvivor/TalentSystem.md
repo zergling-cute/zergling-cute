@@ -11,43 +11,26 @@
 
 ## 2. 핵심 아키텍처 및 흐름 (Architecture)
 
-classDiagram
-    class TalentUIManager {
-        -int[] talentLevels
-        -TalentTableAccessor talentTableAccessor
-        +Awake()
-        +OnTalentSelected(int i)
-        +OnUpgradeTalent()
-        -ApplyTalentStatToData()
-    }
-    
-    class TalentTableAccessor {
-        -List~TalentRow~ talentRows
-        +GetValue(string file, int level) float
-        +GetCost(string file, int level) int
-    }
-
-    class TalentRow {
-        +string File
-        +int Level
-        +float Value
-        +int Cost
-    }
-    
-    class TalentTransfer {
-        +TalentData data
-        +int[] TalentLevels
-    }
-
-    TalentUIManager *-- TalentTableAccessor : 생성 및 소유 (Composition)
-    TalentTableAccessor "1" *-- "many" TalentRow : CSV 데이터 캐싱
-    TalentUIManager ..> TalentTransfer : 업그레이드 수치 반영 (Dependency)
 본 시스템은 기획 데이터(CSV)와 인게임 로직을 완벽하게 분리하는 것을 목표로 설계되었습니다.
 
 1. **데이터 로드:** 게임 실행 시 `TalentTableAccessor`가 `TalentTable.csv` 파일을 읽어와 메모리에 `List<TalentRow>` 형태로 캐싱합니다.
 2. **UI 바인딩:** 플레이어가 특정 재능을 선택하면, LINQ 쿼리를 통해 현재 레벨에 맞는 필요 골드와 상승 수치를 즉시 UI에 반영합니다.
 3. **업그레이드 트랜잭션:** 업그레이드 버튼 클릭 시, 최대 레벨 도달 여부와 소지 골드를 검증(Validation)한 후 안전하게 능력치를 갱신하고 사운드 피드백을 출력합니다.
 
+### 📌 재능 업그레이드 검증 및 실행 흐름도
+아래 다이어그램은 플레이어가 '업그레이드 버튼'을 눌렀을 때 내부적으로 실행되는 안전망 검증 및 스탯 적용 프로세스입니다.
+
+```mermaid
+flowchart TD
+    A([업그레이드 버튼 클릭]) --> B{현재 레벨이 10 (최대)인가?}
+    B -- Yes --> C[실패 사운드 출력 및 로직 중단]
+    B -- No --> D{현재 골드 >= 필요 골드?}
+    D -- No (골드 부족) --> E[실패 사운드 출력 및 로직 중단]
+    D -- Yes (조건 충족) --> F[골드 차감 및 레벨 +1 증가]
+    F --> G[CSV 캐시에서 다음 레벨 수치 및 비용 로드]
+    G --> H[TalentTransfer 스태틱 데이터에 스탯 적용]
+    H --> I[UI 갱신 및 성공 사운드 재생]
+```
 ---
 
 ## 3. 클래스 및 주요 함수 명세 (Code Specification)
