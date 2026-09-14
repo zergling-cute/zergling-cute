@@ -11,6 +11,37 @@
 
 ## 2. 핵심 아키텍처 및 흐름 (Architecture)
 
+classDiagram
+    class TalentUIManager {
+        -int[] talentLevels
+        -TalentTableAccessor talentTableAccessor
+        +Awake()
+        +OnTalentSelected(int i)
+        +OnUpgradeTalent()
+        -ApplyTalentStatToData()
+    }
+    
+    class TalentTableAccessor {
+        -List~TalentRow~ talentRows
+        +GetValue(string file, int level) float
+        +GetCost(string file, int level) int
+    }
+
+    class TalentRow {
+        +string File
+        +int Level
+        +float Value
+        +int Cost
+    }
+    
+    class TalentTransfer {
+        +TalentData data
+        +int[] TalentLevels
+    }
+
+    TalentUIManager *-- TalentTableAccessor : 생성 및 소유 (Composition)
+    TalentTableAccessor "1" *-- "many" TalentRow : CSV 데이터 캐싱
+    TalentUIManager ..> TalentTransfer : 업그레이드 수치 반영 (Dependency)
 본 시스템은 기획 데이터(CSV)와 인게임 로직을 완벽하게 분리하는 것을 목표로 설계되었습니다.
 
 1. **데이터 로드:** 게임 실행 시 `TalentTableAccessor`가 `TalentTable.csv` 파일을 읽어와 메모리에 `List<TalentRow>` 형태로 캐싱합니다.
