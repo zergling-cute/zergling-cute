@@ -70,4 +70,4 @@ private void OnBgmToggleChanged(bool isOn)
 }
 ```
 
->  [SoundOptionsController.cs 전체 코드 보기](./SoundOptionsController.cs)
+>  [SoundOptionsController.cs 전체 코드 보기](./cs_File/SoundOptionsController.cs)
