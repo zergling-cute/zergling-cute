@@ -17,8 +17,8 @@ flowchart TD
     A[UI 갱신 요청 RefreshSkillUI] --> B[PlayerSkills에서 획득 스킬 목록 로드]
     B --> C{현재 선택된 테마 Story 확인}
     C --> D[SkillDatabase에서 SO 데이터 매핑]
-    D --> E[테마에 맞는 스킬 이름 파싱 ResolveSkillName]
-    D --> F[테마 전용 아이콘 로드 LoadIconByStory]
+    D --> E[테마에 맞는 스킬 이름 파싱 <br>ResolveSkillName]
+    D --> F[테마 전용 아이콘 로드 <br>LoadIconByStory]
     
     F --> G{iconCache에 이미 있는가?}
     G -- Yes --> H[캐시된 Sprite 즉시 반환 및 UI 적용]
