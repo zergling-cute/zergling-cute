@@ -16,13 +16,13 @@
 flowchart TD
     A[일시정지 호출] --> B[PauseUI 활성화]
     B --> C[Time.timeScale = 0f 설정]
-    C --> D[모든 LoopingAudioSource 일시정지]
+    C --> D[모든 LoopingAudioSource <br>일시정지]
     
     E([계속하기 버튼 클릭]) --> F[PauseUI 비활성화]
     F --> G[잔상 방지용 Tooltip 강제 숨김]
-    G --> H[Time.timeScale = 1f 원상복구 및 사운드 재개]
+    G --> H[Time.timeScale = 1f <br>원상복구 및 사운드 재개]
     
-    I([메인화면 버튼 클릭]) --> J[Time.timeScale = 1f 원상복구]
+    I([메인화면 버튼 클릭]) --> J[Time.timeScale = 1f <br>원상복구]
     J --> K[StoryTitle 씬 로드]
 ```
 
