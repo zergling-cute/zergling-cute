@@ -1,24 +1,14 @@
-# 🛠 트리플서바이버: 재능 업그레이드 시스템 (Talent System)
+#  데이터 주도 기반 재능 업그레이드 시스템 (Talent System)
 
 ## 1. 시스템 개요 (Overview)
-플레이어가 게임 내 재화(Gold)를 소모하여 캐릭터의 다양한 능력치(공격력, 체력, 이동속도 등)를 영구적으로 강화하는 시스템입니다. 
-기획 수치 변경에 유연하게 대응하기 위해 **데이터 주도 설계(Data-Driven Design)**를 채택하여 구현했습니다.
+기획 데이터(CSV)와 인게임 로직을 완벽하게 분리하는 것을 목표로 설계된 스탯 업그레이드 시스템입니다. 
+데이터를 메모리에 캐싱하여 LINQ 쿼리를 통해 UI에 즉각 바인딩하며, 재화 소모 및 스탯 상승을 안전하게 검증하는 트랜잭션 구조를 갖추고 있습니다.
 
-* **담당 역할:** 시스템 아키텍처 설계, CSV 데이터 파싱 로직 구현, UI 연동 및 사운드 제어
-* **핵심 키워드:** `Data-Driven`, `CSV Parsing`, `LINQ`, `Validation`
+* **핵심 키워드:** `Data-Driven Design`, `CSV Parsing`, `LINQ`, `Validation Logic`
 
 ---
 
 ## 2. 핵심 아키텍처 및 흐름 (Architecture)
-
-본 시스템은 기획 데이터(CSV)와 인게임 로직을 완벽하게 분리하는 것을 목표로 설계되었습니다.
-
-1. **데이터 로드:** 게임 실행 시 `TalentTableAccessor`가 `TalentTable.csv` 파일을 읽어와 메모리에 `List<TalentRow>` 형태로 캐싱합니다.
-2. **UI 바인딩:** 플레이어가 특정 재능을 선택하면, LINQ 쿼리를 통해 현재 레벨에 맞는 필요 골드와 상승 수치를 즉시 UI에 반영합니다.
-3. **업그레이드 트랜잭션:** 업그레이드 버튼 클릭 시, 최대 레벨 도달 여부와 소지 골드를 검증(Validation)한 후 안전하게 능력치를 갱신하고 사운드 피드백을 출력합니다.
-
-### 📌 재능 업그레이드 검증 및 실행 흐름도
-아래 다이어그램은 플레이어가 '업그레이드 버튼'을 눌렀을 때 내부적으로 실행되는 안전망 검증 및 스탯 적용 프로세스입니다.
 
 ```mermaid
 flowchart TD
@@ -31,49 +21,50 @@ flowchart TD
     G --> H[TalentTransfer에 스탯 데이터 반영]
     H --> I[UI 갱신 및 성공 사운드 출력]
 ```
----
-
-## 3. 클래스 및 주요 함수 명세 (Code Specification)
-
-### 3.1 핵심 클래스
-* **`TalentUIManager` (컨트롤러):** 재능 UI 상태를 갱신하고, 재화 소모 및 스탯 상승 로직을 총괄합니다.
-* **`TalentTableAccessor` (데이터 접근자):** CSV 데이터를 파싱하고, 캡슐화된 메서드(`GetValue`, `GetCost`, `GetDescription`)를 통해 안전하게 데이터를 제공합니다.
-* **`TalentTransfer` (정적 데이터 컨테이너):** 씬(Scene)이 전환되어도 업그레이드된 능력치가 유지되도록 데이터를 보관합니다.
-
-### 3.2 주요 함수 (Methods)
-* `Awake()`
-  * 데이터 테이블을 초기화하고, `talentButtons` 배열을 순회하며 동적으로 `OnTalentSelected` 이벤트를 할당하여 하드코딩을 방지합니다.
-* `OnTalentSelected(int i)`
-  * 선택된 재능의 ID와 현재 레벨을 기반으로 CSV 캐시에서 데이터를 검색(`FirstOrDefault`)하여 UI(설명 텍스트, 아이콘, 테두리)를 갱신합니다.
-* `OnUpgradeTalent()`
-  * **안전망 로직 적용:** 로직 실행 전 `currentLevel >= 10` (최대 레벨 검사) 및 `playerGold >= cost` (재화 부족 검사)를 먼저 수행합니다.
-  * 조건 통과 시 골드를 차감하고 `ApplyTalentStatToData`를 호출해 스탯을 적용한 뒤, 성공 사운드(`Talent_uprade_success`)를 재생합니다. 실패 시 에러 사운드를 재생하여 UX를 개선했습니다.
 
 ---
 
-## 4. 트러블슈팅 및 기술적 의사결정 (Troubleshooting)
+## 3. 핵심 기능 구현 및 코드 발췌 (Key Features & Code)
 
-### 🔴 문제 상황: 기획 데이터 변경에 따른 유지보수 한계
-초기 설계에서는 6가지 재능의 10단계 레벨업 수치(총 60개 데이터 세트)를 C# 스크립트 내부에 하드코딩하는 방식을 고려했습니다. 하지만 기획 파트에서 밸런스 수정을 요청할 때마다 개발자가 직접 코드를 수정하고 다시 빌드해야 하는 심각한 비효율이 예상되었습니다.
+### 3.1 안전한 업그레이드 트랜잭션 (Validation Logic)
+단순히 수치만 올리는 것이 아니라, 최대 레벨 초과 여부와 현재 소지 골드를 사전에 검증하여 논리적 오류를 원천 차단합니다.
 
-### 🟡 해결 과정: AI 협업을 통한 Data-Driven 설계 도입
-확장성을 위해 **데이터와 로직의 분리**를 결정했습니다. 
-* 대형 언어 모델(AI)과 데이터 구조화에 대해 토론하며 CSV 파싱을 통한 접근 방식의 힌트를 얻었습니다.
-* AI가 제안한 파싱 로직의 메모리 할당 방식을 분석하고, 프로젝트 컨벤션에 맞게 내부 클래스(`TalentRow`)와 리스트(`List<TalentRow>`)를 활용하는 형태로 코드를 직접 리팩토링했습니다.
-* 데이터를 검색할 때 발생할 수 있는 병목 현상을 방지하기 위해 `System.Linq`의 `FirstOrDefault` 구문을 적용해 검색을 최적화했습니다.
+```csharp
+public void TryUpgradeTalent(string talentId)
+{
+    // 1. 최대 레벨 도달 검증
+    if (currentLevel >= 10) 
+    {
+        PlayErrorSound();
+        return; 
+    }
 
-### 🟢 결과: 유연한 밸런싱 시스템 구축
-* **생산성 향상:** 코드의 수정 없이 기획자가 `TalentTable.csv` 파일만 교체하면 게임 내 수치가 즉각적으로 반영되는 유연한 시스템을 구축했습니다.
-* **휴먼 에러 방지:** 외부 데이터를 불러올 때 빈 문자열이나 잘못된 타입이 들어오는 것을 방지하기 위해 `int.TryParse`, `float.TryParse`를 적용하여 런타임 에러를 원천 차단했습니다.
+    // 2. 필요 재화(Cost) 검증
+    int requiredGold = GetCostFromCSV(talentId, currentLevel);
+    if (PlayerManager.CurrentGold < requiredGold) 
+    {
+        PlayErrorSound();
+        return;
+    }
 
-## 5. 데이터 구조 및 UI 연동 예시 (Data Format)
+    // 3. 재화 차감 및 레벨 증가 적용
+    PlayerManager.CurrentGold -= requiredGold;
+    currentLevel++;
+    
+    // 4. 상승된 스탯 반영 및 UI 갱신
+    ApplyTalentStat(talentId, currentLevel);
+    RefreshTalentUI();
+    PlaySuccessSound();
+}
+```
+
+### 3.2 엑셀(CSV) 연동 데이터 구조 (Data Format)
 실제 밸런싱 작업에 사용된 `TalentTable.csv`의 데이터 포맷 예시입니다. 
-단순한 수치뿐만 아니라, 유니티 Rich Text 태그(`<color>`)를 포함한 설명 텍스트를 통째로 관리하여 코드 수정 없이도 UI 디자인 연동까지 가능하도록 설계했습니다.
+유니티 Rich Text 태그(`<color>`)를 포함한 설명 텍스트를 통째로 관리하여 코드 수정 없이도 UI 디자인 연동이 가능하도록 설계했습니다.
 
 | file (재능 ID) | level (레벨) | value (누적 증가치) | desc (설명 텍스트) | cost (필요 재화) |
 | :--- | :--- | :--- | :--- | :--- |
-| talent_attack_power | 0 | 0 | `<color=#ff0000>공격력</color>이 증가합니다. <br> (현재 재능 레벨: 0)` | 100 |
-| talent_attack_power | 1 | 6 | `<color=#ff0000>공격력</color>이 증가합니다. <br> (현재 재능 레벨: 1)` | 200 |
-| talent_attack_power | 2 | 12 | `<color=#ff0000>공격력</color>이 증가합니다. <br> (현재 재능 레벨: 2)` | 400 |
+| talent_attack_power | 0 | 0 | `<color=#ff0000>공격력</color>이 증가합니다.` | 100 |
+| talent_attack_power | 1 | 6 | `<color=#ff0000>공격력</color>이 증가합니다.` | 200 |
 
-* **💡 파싱(Parsing) 디테일:** C#의 `CSVReader`를 통해 데이터를 읽어올 때, 딕셔너리 키(Key) 값으로 영문 칼럼명(`file`, `level`, `value`, `cost`, `desc`)을 매핑하여 타입 변환 에러를 방지하고 안전하게 메모리에 로드했습니다.
+>  [TalentUIManager.cs 전체 코드 보기](./TalentUIManager.cs) 
