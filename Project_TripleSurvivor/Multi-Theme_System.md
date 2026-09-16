@@ -14,9 +14,9 @@
 
 ```mermaid
 flowchart TD
-    A[(GameManager.Story)] -->|State: 0 (Animal)| B[로비 UI 팝업 및 배경 갱신]
-    A -->|State: 1 (Fantasy)| C[테마 전용 컷신 코루틴 재생]
-    A -->|State: 2 (Alien)| D[몬스터 스프라이트 및 애니메이터 교체]
+    A[GameManager.Story] -->|State: 0 Animal| B[로비 UI 팝업 및 배경 갱신]
+    A -->|State: 1 Fantasy| C[테마 전용 컷신 코루틴 재생]
+    A -->|State: 2 Alien| D[몬스터 스프라이트 및 애니메이터 교체]
     
     B --> E[StorySpriteChanger / StoryTMPChanger]
     C --> F[StoryTitleUI]
