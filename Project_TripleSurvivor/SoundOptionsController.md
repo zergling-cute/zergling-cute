@@ -1,4 +1,4 @@
-# 🛠 환경설정 및 사운드 제어 시스템 (Sound Options)
+#  환경설정 및 사운드 제어 시스템 (Sound Options)
 
 ## 1. 시스템 개요 (Overview)
 게임 내 배경음(BGM)과 효과음(SFX)을 켜고 끌 수 있는 환경설정 UI 컨트롤러입니다. 
@@ -70,4 +70,4 @@ private void OnBgmToggleChanged(bool isOn)
 }
 ```
 
-> 👉 [SoundOptionsController.cs 전체 코드 보기](./SoundOptionsController.cs)
+>  [SoundOptionsController.cs 전체 코드 보기](./SoundOptionsController.cs)
