@@ -75,4 +75,4 @@ private Sprite LoadIconByStory(string iconKey, bool isPassive)
 }
 ```
 
->  [SkillUIManager.cs 전체 코드 보기](./cs_file/SkillUIManager.cs)
+>  [SkillUIManager.cs 전체 코드 보기](./Scripts/SkillUIManager.cs)

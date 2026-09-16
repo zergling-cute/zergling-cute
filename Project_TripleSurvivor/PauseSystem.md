@@ -80,4 +80,4 @@ void ClosePausePopup()
 }
 ```
 
->  [PauseUI.cs 전체 코드 보기](./cs_File/PauseUI.cs)
+>  [PauseUI.cs 전체 코드 보기](./Scripts/PauseUI.cs)
