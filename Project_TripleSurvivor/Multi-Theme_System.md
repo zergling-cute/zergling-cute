@@ -1,4 +1,4 @@
-# 🛠 다중 테마(Multi-Theme) 기반 통합 UI 및 연출 시스템
+#  다중 테마(Multi-Theme) 기반 통합 UI 및 연출 시스템
 
 ## 1. 시스템 개요 (Overview)
 게임 내 3가지 세계관(Animal, Fantasy, Alien)에 따라 로비, 컷신, 인게임 UI, 심지어 몬스터의 외형까지 실시간으로 변화하는 **통합 동적 스키닝(Dynamic Skinning) 시스템**입니다. 
@@ -45,10 +45,10 @@ public void UpdateSpriteByStory()
 }
 ```
 > **🔗 관련 전체 코드 보기**
-> 👉 [`StorySpriteChanger.cs` (UI 이미지 교체)](./Scripts/StorySpriteChanger.cs)
-> 👉 [`StoryTMPChanger.cs` (UI 텍스트 교체)](./Scripts/StoryTMPChanger.cs)
-> 👉 [`MonsterVisualSwitcher.cs` (몬스터 외형 교체)](./Scripts/MonsterVisualSwitcher.cs)
-> 👉 [`StoryChoice.cs` / `StoryTitleUI.cs` / `TitleUI.cs` (로비 및 컷신 제어)](./Scripts/StoryChoice.cs)
+>  [`StorySpriteChanger.cs` (UI 이미지 교체)](./Scripts/StorySpriteChanger.cs)
+>  [`StoryTMPChanger.cs` (UI 텍스트 교체)](./Scripts/StoryTMPChanger.cs)
+>  [`MonsterVisualSwitcher.cs` (몬스터 외형 교체)](./Scripts/MonsterVisualSwitcher.cs)
+>  [`StoryChoice.cs` / `StoryTitleUI.cs` / `TitleUI.cs` (로비 및 컷신 제어)](./Scripts/StoryChoice.cs)
 
 
 ### 3.2 코루틴을 활용한 경량 UI 렌더링 최적화
@@ -78,9 +78,9 @@ private IEnumerator AnimateAndDeactivate(float totalDuration, float peakScale, f
 }
 ```
 > **🔗 관련 전체 코드 보기**
-> 👉 [`LevelUpText.cs` (레벨업 텍스트 코루틴 연출)](./Scripts/LevelUpText.cs)
-> 👉 [`LevelUpEffect.cs` (레벨업 파티클 이펙트)](./Scripts/LevelUpEffect.cs)
-> 👉 [`LevelDisplay.cs` (레벨 데이터 UI 바인딩)](./Scripts/LevelDisplay.cs)
+>  [`LevelUpText.cs` (레벨업 텍스트 코루틴 연출)](./Scripts/LevelUpText.cs)
+>  [`LevelUpEffect.cs` (레벨업 파티클 이펙트)](./Scripts/LevelUpEffect.cs)
+>  [`LevelDisplay.cs` (레벨 데이터 UI 바인딩)](./Scripts/LevelDisplay.cs)
 
 
 ### 3.3 정적(Static) 객체 기반 전역 툴팁 시스템
