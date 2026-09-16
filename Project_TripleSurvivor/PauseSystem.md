@@ -1,4 +1,4 @@
-# 🛠 인게임 일시정지 및 상태 관리 시스템 (Pause System)
+#  인게임 일시정지 및 상태 관리 시스템 (Pause System)
 
 ## 1. 시스템 개요 (Overview)
 게임 플레이 중 일시정지(Pause) 상태를 제어하고, 이와 연동되는 오디오, UI 툴팁, 씬 전환을 안전하게 관리하는 시스템입니다.
@@ -80,4 +80,4 @@ void ClosePausePopup()
 }
 ```
 
-> 👉 [PauseUI.cs 전체 코드 보기](./PauseUI.cs)
+>  [PauseUI.cs 전체 코드 보기](./PauseUI.cs)
