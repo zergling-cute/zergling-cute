@@ -16,13 +16,13 @@
 flowchart TD
     A[일시정지 호출] --> B[PauseUI 활성화]
     B --> C[Time.timeScale = 0f 설정]
-    C --> D[모든 LoopingAudioSource <br>일시정지]
+    C --> D[모든 LoopingAudioSource 일시정지]
     
     E([계속하기 버튼 클릭]) --> F[PauseUI 비활성화]
     F --> G[잔상 방지용 Tooltip 강제 숨김]
-    G --> H[Time.timeScale = 1f <br>원상복구 및 사운드 재개]
+    G --> H[Time.timeScale = 1f 원상복구 및 사운드 재개]
     
-    I([메인화면 버튼 클릭]) --> J[Time.timeScale = 1f <br>원상복구]
+    I([메인화면 버튼 클릭]) --> J[Time.timeScale = 1f 원상복구]
     J --> K[StoryTitle 씬 로드]
 ```
 
@@ -60,24 +60,7 @@ public void OpenPausePopup()
         if (source != null && source.isPlaying) source.Pause();
     }
 }
-
-void ClosePausePopup()
-{
-    gameObject.SetActive(false);
-
-    // 팝업이 닫힐 때 툴팁을 강제로 숨겨 잔상 버그 방지
-    TooltipTrigger.HideTooltip();
-
-    Time.timeScale = 1f;
-
-    // 씬에 있는 모든 루프 사운드 '다시 재생'
-    var loopingSfxList = Object.FindObjectsByType<LoopingAudioSource>(FindObjectsSortMode.None);
-    foreach (var sfx in loopingSfxList)
-    {
-        AudioSource source = sfx.GetComponent<AudioSource>();
-        if (source != null) source.UnPause();
-    }
-}
 ```
-
->  [PauseUI.cs 전체 코드 보기](./Scripts/PauseUI.cs)
+> **🔗 관련 전체 코드 보기**
+>  [`PauseUI.cs` (일시정지 UI 제어)](./Scripts/PauseUI.cs)
+>  [`LoopingAudioSource.cs` (커스텀 루프 사운드 컴포넌트)](./Scripts/LoopingAudioSource.cs)
