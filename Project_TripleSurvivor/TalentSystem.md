@@ -67,4 +67,4 @@ public void TryUpgradeTalent(string talentId)
 | talent_attack_power | 0 | 0 | `<color=#ff0000>공격력</color>이 증가합니다.` | 100 |
 | talent_attack_power | 1 | 6 | `<color=#ff0000>공격력</color>이 증가합니다.` | 200 |
 
->  [TalentUIManager.cs 전체 코드 보기](./TalentUIManager.cs) 
+>  [TalentUIManager.cs 전체 코드 보기](./cs_File/TalentUIManager.cs) 
