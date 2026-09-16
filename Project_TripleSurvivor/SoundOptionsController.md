@@ -2,9 +2,9 @@
 
 ## 1. 시스템 개요 (Overview)
 게임 내 배경음(BGM)과 효과음(SFX)을 켜고 끌 수 있는 환경설정 UI 컨트롤러입니다. 
-플레이어가 설정한 옵션 값이 게임을 껐다 켜도 유지되도록 **데이터 영속성(Data Persistence)**을 보장하며, 싱글톤(Singleton) 패턴으로 구현된 사운드 매니저들과 통신하여 볼륨을 중앙 제어합니다.
+플레이어가 설정한 옵션 값이 게임을 껐다 켜도 유지되도록 **데이터 영속성(Data Persistence)**을 보장하며, 직접 설계한 싱글톤(Singleton) 패턴의 사운드 매니저들과 통신하여 실제 오디오 볼륨을 중앙 제어합니다.
 
-* **핵심 키워드:** `PlayerPrefs`, `Event-Driven UI`, `Singleton Integration`, `UX Animation`
+* **핵심 키워드:** `PlayerPrefs`, `Event-Driven UI`, `Singleton Manager`, `Audio Control`
 
 ---
 
@@ -22,8 +22,8 @@ flowchart TD
     
     F[토글 클릭 이벤트 발생] --> G{현재 On 상태인가?}
     
-    G -- Yes --> H[사운드 켜기<br>PlayerPrefs에 1 저장]
-    G -- No --> I[사운드 끄기<br>PlayerPrefs에 0 저장]
+    G -- Yes --> H[사운드 매니저 켜기<br>PlayerPrefs에 1 저장]
+    G -- No --> I[사운드 매니저 끄기<br>PlayerPrefs에 0 저장]
     
     H --> J[UI 이미지 Flip 연출]
     I --> K[UI 이미지 원위치 연출]
@@ -41,14 +41,10 @@ private void Start()
 {
     // PlayerPrefs를 활용한 로컬 저장 데이터 불러오기 (기본값 ON 설정으로 예외 방지)
     bool bgmOn = PlayerPrefs.GetInt("BGM_ON", 1) == 1;
-    bool sfxOn = PlayerPrefs.GetInt("SFX_ON", 1) == 1;
 
-    // UI 토글 상태 및 실제 볼륨 강제 동기화
+    // UI 토글 상태 및 실제 볼륨 강제 동기화 (사운드 매니저 직접 호출)
     bgmToggle.isOn = bgmOn;
     BgmSoundManager.Instance.SetVolume(bgmOn ? 0.5f : 0f);
-
-    // 상태에 따른 UI 이미지 직관적 피드백 (Y축 180도 회전)
-    bgm.transform.rotation = Quaternion.Euler(0f, bgmOn ? 180f : 0f, 0f);
 
     // Update() 대신 리스너를 동적 할당하여 이벤트 기반 최적화
     bgmToggle.onValueChanged.AddListener(OnBgmToggleChanged);
@@ -56,7 +52,7 @@ private void Start()
 ```
 
 ### 3.2 이벤트 기반 사운드 토글 제어
-토글 값이 변경될 때마다 볼륨 조절, UI 회전 연출, 로컬 데이터 저장이 동시에 처리됩니다.
+토글 값이 변경될 때마다 오디오 매니저를 통한 볼륨 조절, UI 회전 연출, 로컬 데이터 저장이 동시에 처리됩니다.
 
 ```csharp
 private void OnBgmToggleChanged(bool isOn)
@@ -65,9 +61,12 @@ private void OnBgmToggleChanged(bool isOn)
     float yRotation = isOn ? 180f : 0f;
     bgm.transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
     
+    // 중앙 집중형 사운드 매니저를 통한 볼륨 제어
     BgmSoundManager.Instance.SetVolume(isOn ? 0.3f : 0f);
     PlayerPrefs.SetInt("BGM_ON", isOn ? 1 : 0);
 }
 ```
-
->  [SoundOptionsController.cs 전체 코드 보기](./Scripts/SoundOptionsController.cs)
+> **🔗 관련 전체 코드 보기**
+>  [`SoundOptionsController.cs` (사운드 UI 및 데이터 제어)](./Scripts/SoundOptionsController.cs)
+>  [`BgmSoundManager.cs` (BGM 싱글톤 매니저)](./Scripts/BgmSoundManager.cs)
+>  [`EffectsSoundManager.cs` (SFX 싱글톤 매니저)](./Scripts/EffectsSoundManager.cs)
